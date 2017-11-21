@@ -6,7 +6,10 @@ https://medium.com/@hoppy/how-to-test-or-scrape-javascript-rendered-websites-wit
 
 
 
-
+###
+https://medium.com/python-pandemonium/develop-your-first-web-crawler-in-python-scrapy-6b2ee4baf954
+https://www.digitalocean.com/community/tutorials/how-to-crawl-a-web-page-with-scrapy-and-python-3
+http://mherman.org/blog/2012/11/05/scraping-web-pages-with-scrapy/#.WhQbOhYo_dE
 ###DRIVER
 
 ## Use Geckodriver

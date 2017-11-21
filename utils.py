@@ -1,10 +1,25 @@
-
-
+from selenium import webdriver  
+from selenium.common.exceptions import NoSuchElementException  
+from selenium.webdriver.common.keys import Keys  
 from BeautifulSoup import BeautifulSoup
+#import request
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait # available since 2.4.0
+from selenium.webdriver.support import expected_conditions as EC # available since 2.26.0
+#
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.by import By
+from selenium.common.exceptions import TimeoutException
 
-import urllib2
-from lxml import etree
+from ppretty import ppretty
+
+import os
 import requests
+from selenium import webdriver
+import urllib
+from lxml import etree
+
 
 x_category = '/html/body/div[4]/article/div[1]/div[2]/section[1]/div/header/div[2]/div/div[1]'
 x_subjects = '/html/body/div[4]/article/div[1]/div[2]/section[1]/div/header/div[2]/div/div[2]'
@@ -13,20 +28,19 @@ d = {'category': x_category ,'subjects': x_subjects ,'author': x_author}
 
 
 def load_page(url):
-	driver = webdriver.Firefox()
-	driver.get("url")
-	delay = 3 # seconds
-	try:
-	    myElem = WebDriverWait(driver, delay).until(EC.presence_of_element_located((By.ID, 'IdOfMyElement')))
-	    print "Page is ready!"
-	    frame = WebDriverWait(driver, 30).until(lambda x: x.find_element_by_id("dsq1"))
-	    driver.switch_to_frame(frame)
-	    result = WebDriverWait(driver, 30).until( lambda x: x.find_element_by_id("post-count"))
-	except TimeoutException:
-	    print "Loading took too much time!"
+    driver = webdriver.Firefox()
+    driver.get("url")
+    delay = 3 # seconds
+    try:
+        myElem = WebDriverWait(driver, delay).until(EC.presence_of_element_located((By.ID, 'IdOfMyElement')))
+        print "Page is ready!"
+        frame = WebDriverWait(driver, 30).until(lambda x: x.find_element_by_id("dsq1"))
+        driver.switch_to_frame(frame)
+        result = WebDriverWait(driver, 30).until( lambda x: x.find_element_by_id("post-count"))
+    except TimeoutException:
+        print "Loading took too much time!"
 #
-
-
+#
 #
 #
 emotions = ['anger','amused','sad','','informed']
@@ -55,30 +69,35 @@ class article():
         except TimeoutException:
             driver.close()
             print "Loading took too much time!"
-
-        
-        
-        #url =  "http://www.example.com/servlet/av/ResultTemplate=AVResult.html"
-        #htmlparser = etree.HTMLParser()
-        #tree = etree.parse(driver.page_source, htmlparser)
-        #tree.xpath(xpath)
-        #print(tree)
+    def scrap_content(self):
+        #article
+        a = self.soup.find('div',{'class':'article-text'})
+        for block in self.a.findAll('p'):
+            #DO PREPROCESSING HERE I WANT BAG OF WORDS IN BLOCK
+            self.article.append(block.text)
+            print(block)
+        meta = self.soup.find('header',{'class':'article-meta'})
+        self.meta = meta
+        self.author = meta.find('div',{'class':'author-name'})
+        self.date = meta.find('time',{'datetime':True})
 
     def __init__(self,url):
         self.url = url
-        response = urllib2.urlopen(self.url)
-        page = response.read()
-        htmlparser = etree.HTMLParser()
-        print(self.url)
-        self.tree = etree.parse(page, htmlparser)
-        print(self.tree)
-        for category,xpathselector in d.items():
-            #print(category,xpathselector)
-            #print(self.tree.xpath(xpathselector))
-            setattr(self,category,self.tree.xpath(xpathselector))
-        self.r = requests.get(self.url)
-        self.source_code = BeautifulSoup(self.r.text)#
+        self.article = []
+        self.bow = [] #bag of words for the article
+        f = urllib.urlopen(url)
+        self.soup = BeautifulSoup(f)
+        #self.source_code = BeautifulSoup(self.r.text)#
         self.emotions = dict(zip(emotions,[0 for i in range(len(emotions))])) #read in emoitions
-        #self.update()
+        #
+        self.update()
+        self.scrap_article()
+        #
+    #def __repr__(self):
+        #
 
-
+    def __str__(self):
+        print('URL : ',self.url)
+        print('HEADER:',self.author.text)
+        print('DATE :',self.date.text)
+        print(a.text for a in self.article)
