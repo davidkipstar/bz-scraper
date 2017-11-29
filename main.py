@@ -65,7 +65,7 @@ class article():
         paragraphs =  a.findAll('p')
         #DO PREPROCESSING HERE I WANT BAG OF WORDS IN BLOCK
         self.paragraphs = paragraphs 
-        #self.article = paragraphs.text
+        #self.article = oparagraphs.text
         meta = self.soup.find('header',{'class':'article-meta'})
         self.meta = meta
         self.author = meta.find('span',{'class':'author-name'}) #author as unicode
